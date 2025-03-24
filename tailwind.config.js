@@ -1,11 +1,22 @@
+
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  darkMode: "selector",
+  content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        greenColor: "#1a523d",
+        greenIsh: "#6bc22e",
+        greyIsh: "#a6a6a6",
+        textColor: "#fafffc",
+        btnColor: "#6BC22E"
+      },
+    },
   },
-  plugins: [],
-}
+  // plugins: [
+  //   require("flowbite/plugin")({
+  //     charts: true,
+  //   }),
+  // ]
+};
