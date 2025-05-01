@@ -1,170 +1,148 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Moon, Sun, LogOut, ChevronRight } from "lucide-react";
-import { Button } from "@/components/shadcn/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/shadcn/avatar";
-import { useUserStore } from "../../store/useUserStore";
-import { toast } from "sonner";
+import { NavLink } from "react-router-dom";
+import { 
+  LayoutDashboard, 
+  Users, 
+  Settings, 
+  ChevronDown,
+  UserPlus,
+  Shield,
+  FileText,
+  BarChart,
+  Mail,
+  HelpCircle
+} from "lucide-react";
+
+const navItems = [
+  {
+    name: "Dashboard",
+    path: "/dashboard",
+    icon: <LayoutDashboard size={18} />,
+  },
+  {
+    name: "Analytics",
+    path: "/dashboard/analytics",
+    icon: <BarChart size={18} />,
+  },
+  {
+    name: "User Management",
+    icon: <Users size={18} />,
+    subLinks: [
+      { name: "All Users", path: "/dashboard/users", icon: <Users size={16} /> },
+      { name: "Add User", path: "/dashboard/users/add", icon: <UserPlus size={16} /> },
+      { name: "Roles", path: "/dashboard/users/roles", icon: <Shield size={16} /> },
+    ],
+  },
+  {
+    name: "Content",
+    icon: <FileText size={18} />,
+    subLinks: [
+      { name: "Pages", path: "/dashboard/content/pages" },
+      { name: "Posts", path: "/dashboard/content/posts" },
+      { name: "Media", path: "/dashboard/content/media" },
+    ],
+  },
+  {
+    name: "Messages",
+    path: "/dashboard/messages",
+    icon: <Mail size={18} />,
+  },
+  {
+    name: "Settings",
+    path: "/dashboard/settings",
+    icon: <Settings size={18} />,
+  },
+  {
+    name: "Help",
+    path: "/dashboard/help",
+    icon: <HelpCircle size={18} />,
+  },
+];
 
 const DashNav = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const location = useLocation();
-  const { toggleDarkMode, user, loggedIn, logOut } = useUserStore();
+  const [expandedItems, setExpandedItems] = useState({});
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
-  // Navigation items
-  const navItems = [
-    { name: "My Tender", path: "/dashboard/" },
-    { name: "My products", path: "/dashboard/products" },
-    { name: "Subscriptions", path: "/dashboard/subscriptions" },
-    { name: "Profile", path: "/dashboard/profile" },
-  ];
+  const toggleExpand = (name) => {
+    setExpandedItems(prev => ({
+      ...prev,
+      [name]: !prev[name]
+    }));
+  };
 
   return (
-    <>
-      {/* Sidebar - Mobile overlay */}
-      <nav className="fixed  top-0 z-10 w-full border-b bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white">
-        <div className="px-4 sm:px-6 lg:px-8">
-          
-          <div className="flex items-center justify-between h-16">
-            {/* Left side - Menu button */}
-            <div className="flex items-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleSidebar}
-                className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <Menu size={24} />
-              </Button>
-            </div>
-
-            {/* Right side */}
-            <div className="flex items-center space-x-4">
-              {/* Dark mode toggle button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleDarkMode}
-                className="rounded-full p-1"
-              >
-                <Sun className="hidden dark:block text-yellow-400" />
-                <Moon className="block dark:hidden" size={20} />
-              </Button>
-
-              {/* User menu */}
-              {loggedIn ? (
-                <div className="flex items-center space-x-3">
-                  <Avatar className="h-8 w-8 bg-gray-500 dark:bg-gray-400">
-                    <AvatarImage
-                      src={user?.avatarUrl || ""}
-                      alt={user?.name || "User"}
-                    />
-                    <AvatarFallback>
-                      {user?.name?.charAt(0) || "SN"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => toast.error("Logout Success")}
-                    className="rounded-md hidden md:flex"
-                  >
-                    <LogOut size={16} className="mr-1" />
-                  </Button>
-                </div>
-              ) : (
-                <Link
-                  to="/login"
-                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700"
-                >
-                  Login
-                </Link>
-              )}
-            </div>
-          </div>
-
-        </div>
-      </nav>
-
-      <div
-        className={`fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity lg:hidden ${
-          sidebarOpen ? "opacity-10" : "opacity-0 pointer-events-none"
-        }`}
-        onClick={toggleSidebar}
-      />
-
-
-      <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 flex flex-col transition-all duration-300 transform 
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} 
-        bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-800
-        lg:relative lg:inset-0`}
-      >
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
-          <Link to="/dashboard" className="flex items-center">
-            <span className="text-xl font-bold text-gray-900 dark:text-white">
-              Dashboard
-            </span>
-          </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className="lg:hidden"
-          >
-            <X size={24} />
-          </Button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto pt-5 pb-4">
-          <nav className="mt-5 px-2 space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`group flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors 
-                ${
-                  location.pathname === item.path
-                    ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-                }`}
-              >
-                {item.name}
-                <ChevronRight
-                  size={16}
-                  className={`ml-auto transition-transform ${
-                    location.pathname === item.path ? "rotate-90" : ""
-                  }`}
-                />
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        {/* Sidebar footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => {
-              toast.error("Logout Success");
-              logOut();
-            }}
-            className="w-full border border-gray-200 dark:border-gray-800"
-          >
-            <LogOut size={16} className="mr-2" />
-            Sign out
-          </Button>
+    <aside className="fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-900 border-r dark:border-gray-800 shadow-lg z-40">
+      <div className="flex items-center p-6 border-b dark:border-gray-800">
+        <div className="font-bold text-xl text-gray-900 dark:text-white">
+          Admin Panel
         </div>
       </div>
-
-    </>
+      
+      <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100vh-5rem)]">
+        {navItems.map((item) => (
+          <div key={item.name} className="mb-2">
+            {item.subLinks ? (
+              <div>
+                <button
+                  onClick={() => toggleExpand(item.name)}
+                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition
+                    ${expandedItems[item.name] 
+                      ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                    }`}
+                >
+                  <span className="flex items-center gap-3">
+                    {item.icon}
+                    {item.name}
+                  </span>
+                  <ChevronDown
+                    size={16}
+                    className={`transform transition-transform ${
+                      expandedItems[item.name] ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                
+                {expandedItems[item.name] && (
+                  <div className="ml-6 mt-2 space-y-1">
+                    {item.subLinks.map((sub) => (
+                      <NavLink
+                        key={sub.name}
+                        to={sub.path}
+                        className={({ isActive }) =>
+                          `flex items-center gap-2 px-4 py-2 rounded-md text-sm transition
+                          ${isActive
+                            ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                          }`
+                        }
+                      >
+                        {sub.icon}
+                        <span>{sub.name}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <NavLink
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition
+                  ${isActive
+                    ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  }`
+                }
+                end
+              >
+                {item.icon}
+                {item.name}
+              </NavLink>
+            )}
+          </div>
+        ))}
+      </nav>
+    </aside>
   );
 };
 
