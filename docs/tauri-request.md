@@ -39,6 +39,7 @@ async function fetchData() {
   try {
     const response = await fetch('https://api.yourbackend.com/data', {
       method: 'GET',
+      timeout: 30, // in seconds
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer your_token'
@@ -200,9 +201,11 @@ In your `tauri.conf.json`, ensure you've allowed your backend domains:
 For development vs production:
 
 ```javascript
+
 const backendUrl = import.meta.env.DEV
   ? 'http://localhost:3000/api'
   : 'https://production-api.com/api';
+
 ```
 
 ### 4. **Using Rust Backend (For Complex Operations)**
@@ -237,12 +240,14 @@ fn main() {
 Call from JavaScript:
 
 ```javascript
+
 import { invoke } from '@tauri-apps/api/tauri';
 
 const response = await invoke('fetch_backend_data', {
   url: 'https://your-api.com/endpoint',
   payload: { key: 'value' }
 });
+
 ```
 
 ### 5. **Error Handling**
@@ -250,6 +255,7 @@ const response = await invoke('fetch_backend_data', {
 Implement proper error handling:
 
 ```javascript
+
 async function safeFetch(url, options) {
   try {
     const response = await fetch(url, options);
@@ -263,6 +269,7 @@ async function safeFetch(url, options) {
     throw error;
   }
 }
+
 ```
 
 ### Key Advantages:
