@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.gitignore
+.env
+.env.local
+*.log
+src-tauri
+.DS_Store
+coverage
+.vscode
+.idea

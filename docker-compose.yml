@@ -1,0 +1,35 @@
+# version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - NODE_ENV=development
+      
+  # Development service with hot-reload
+  dev2:
+    image: node:18-alpine
+    command: sh -c "npm install -g pnpm && pnpm install && pnpm dev"
+    ports:
+      - "5173:5173"
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV=development
+  dev:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "5174:5173"
+    environment:
+      - NODE_ENV=development
+    entrypoint: sh -c "npm install -g pnpm && pnpm install && pnpm run dev"
