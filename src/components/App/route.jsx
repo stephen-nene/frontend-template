@@ -49,7 +49,7 @@ export const routes = [
   { path: "/login", element: AuthRoutes.Login },
   { path: "/register", element: AuthRoutes.Register },
   { path: "/forgot", element: AuthRoutes.Forgot },
-  { path: "/activate/:token", element: AuthRoutes.Activate },
+  { path: "/activate", element: AuthRoutes.Activate },
   { path: "/reset/:token", element: AuthRoutes.Reset },
 
   // Protected Routes

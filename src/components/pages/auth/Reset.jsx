@@ -105,7 +105,7 @@ export default function PasswordResetForm() {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit(e))} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {msg && (
               <Alert
                 variant="success"
