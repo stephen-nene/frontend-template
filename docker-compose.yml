@@ -15,7 +15,7 @@ services:
   # Development service with hot-reload
   dev2:
     image: node:18-alpine
-    command: sh -c "npm install -g pnpm && pnpm install && pnpm dev"
+    command: sh -c "npm install -g pnpm && pnpm install && pnpm run dev"
     ports:
       - "5173:5173"
     working_dir: /app

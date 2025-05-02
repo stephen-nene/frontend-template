@@ -16,11 +16,17 @@ export const useUserStore = create(
 
       getUser: () => get().user,
 
-      toggleDarkMode: () => {
+      toggleDarkMode: (value) => {
         set((state) => {
-          const newMode = !state.darkMode;
-          localStorage.setItem("darkMode", JSON.stringify(newMode));
-          return { darkMode: newMode };
+          if (value !== undefined) {
+            localStorage.setItem("darkMode", JSON.stringify(value));
+            return { darkMode: value };
+          }else{
+
+            const newMode = !state.darkMode;
+            localStorage.setItem("darkMode", JSON.stringify(newMode));
+            return { darkMode: newMode };
+          }
         });
       },
 

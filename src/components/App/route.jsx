@@ -70,14 +70,14 @@ export const routes = [
   {
     path: "/dashboard/",
     element: DashRoutes.DashboardLayout,
-    protected: true,
+    // protected: true,
     roles: ["admin", "user"],
     children: [
       {
         path: "",
         element: DashRoutes.Dashboard,
         protected: true,
-        roles: ["admin", "user"],
+        roles: [],
       },
       {
         path: "products",
@@ -86,10 +86,18 @@ export const routes = [
         roles: ["admin", "user"],
       },
       {
-        path: "profile",
-        element: DashRoutes.Profile,
+        path: "products/inventory",
+        element: DashRoutes.Dashboard,
         protected: true,
         roles: ["admin", "user"],
+        
+      },
+      {
+        path: "profile",
+        element: DashRoutes.Profile,
+        allowPendingAccess: true,
+        protected: true,
+        roles: [],
       },
 
       // Add other dashboard routes as needed
