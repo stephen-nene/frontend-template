@@ -11,22 +11,41 @@ export const useUserStore = create(
       refresh_token: null,
       access_token: null,
       loggedIn: false,
-      darkMode: JSON.parse(localStorage.getItem("darkMode")) || false,
+      darkMode:  false,
       loading: false,
 
       getUser: () => get().user,
+      
+      toggleDarkMode2: (value) => {
+        set((state) => {
+          console.log(state.darkMode,typeof(value),(typeof(value) === 'object'),value)
+
+          if (value !== undefined || typeof(value) !== "object" ) {
+            // localStorage.setItem("darkMode", JSON.stringify(newMode));
+            return { darkMode: value };
+          }else{
+            const newMode = !state.darkMode;
+            
+            // localStorage.setItem("darkMode", JSON.stringify(value));
+            return { darkMode: newMode };
+          }
+        });
+      },
 
       toggleDarkMode: (value) => {
         set((state) => {
-          if (value !== undefined) {
-            localStorage.setItem("darkMode", JSON.stringify(value));
-            return { darkMode: value };
-          }else{
-
+          if (typeof value === 'object' || value === undefined) {
             const newMode = !state.darkMode;
             localStorage.setItem("darkMode", JSON.stringify(newMode));
             return { darkMode: newMode };
           }
+          
+          if (typeof value === 'boolean') {
+            localStorage.setItem("darkMode", JSON.stringify(value));
+            return { darkMode: value };
+          }
+
+          return state;
         });
       },
 

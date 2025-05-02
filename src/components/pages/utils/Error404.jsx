@@ -16,15 +16,14 @@ const Error404 = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isExploring, setIsExploring] = useState(false);
   const [terminalOutput, setTerminalOutput] = useState([]);
-  const { darkMode } = useUserStore((state) => state.darkMode);
+  const  darkMode  = useUserStore((state) => state.darkMode);
   const setDarkMode = useUserStore((state) => state.toggleDarkMode);
-  const [theme, setTheme] = useState("system"); // system, light, dark
 
   useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
+    // console.error(
+    //   "404 Error: User attempted to access non-existent route:",
+    //   location.pathname
+    // );
 
     // Initial terminal output
     setTerminalOutput([

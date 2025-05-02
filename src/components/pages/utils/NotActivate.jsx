@@ -112,17 +112,17 @@ await apiClient.post("profile/auth/activate/resend"
             </Alert>
           ) : (
             <>
-              <Alert className="bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800">
-                <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                <AlertTitle className="text-amber-800 dark:text-amber-400">
+              <Alert variant="warning">
+                {/* <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" /> */}
+                <AlertTitle >
                   Attention Required
                 </AlertTitle>
-                <AlertDescription className="flex flex-col text-amber-700 dark:text-amber-300">
+                <AlertDescription >
                   An activation email was sent to{" "}
-                  {user?.email || "your email address"}{" "}
-                  {/* <span className="font-semibold">
+                  {/* {user?.email || "your email address"}{" "} */}
+                  <span className="font-semibold text-green-500 dark:text-green-400">
                     {user?.email || "your email address"}
-                  </span>{" "} */}
+                  </span>{" "}
                   with instructions.
                 </AlertDescription>
               </Alert>
@@ -219,7 +219,7 @@ await apiClient.post("profile/auth/activate/resend"
 
           {error && (
             <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
+              {/* <AlertCircle className="h-4 w-4" /> */}
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
