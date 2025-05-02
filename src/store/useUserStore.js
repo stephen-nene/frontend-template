@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 import { toast } from "sonner";
-import  {apiClient} from "@/services/apiClient";
+import { apiClient } from "@/services/apiClient";
 
 
 export const useUserStore = create(
@@ -13,6 +13,7 @@ export const useUserStore = create(
       access_token: null,
       loggedIn: false,
       darkMode: JSON.parse(localStorage.getItem("darkMode")) || false,
+      loading: false,
 
       getUser: () => get().user,
 
@@ -31,7 +32,7 @@ export const useUserStore = create(
       setUser: (user, token) => set({ user, token, loggedIn: true }),
 
       clearUser: (no) => {
-        set({ user: null, token: null, loggedIn: false });
+        set({ user: null, refresh_token: null, access_token: null, loggedIn: false });
         if (no) return;
         toast.success("👋 You have been logged out.");
       },
@@ -40,45 +41,55 @@ export const useUserStore = create(
 
       // Backend API Requests
 
-      login: async (data, navigate) => {
+      login: async (data, navigate, setError) => {
+        set({ loading: true });
+        setError(null);
         const toastId = toast.loading("Logging in..."); // Show loading toast
         const data2 = {
           ...data,
           identifier: data.email
         }
-        console.log(data2)
+        // console.log(data2)
 
         try {
           const response = await apiClient.post("profile/auth/login", data2);
           console.log("Response:", response);
           if (response.status === 200) {
 
-              set({
-                user: response.data.user_info,
-                refresh_token: response.data.refresh_token,
-                access_token: response.data.access_token,
-                loggedIn: true,
-              });
-              toast.success(response.data.message || "LoggedIn successful!"); // Replace loading toast with success
+            set({
+              user: response.data.user_info,
+              refresh_token: response.data.refresh_token,
+              access_token: response.data.access_token,
+              loggedIn: true,
+            });
+            toast.success(response.data.message || "LoggedIn successful!"); // Replace loading toast with success
 
-              // setTimeout(() => {
-              //   navigate("/");
-              // }, 3000);
-              return response;
-            
+            // setTimeout(() => {
+            //   navigate("/");
+            // }, 3000);
+            return response;
+
           }
         } catch (error) {
-          console.error("Error:", error);
-          toast.error(error.response?.data?.detail || "An error occurred");
-          throw error;
+          let errorMessage = "An error occurred. Please try again.";
+          if (error.response && (error.response.data || error.response.data.error)) {
+            errorMessage = error.response.data.error || error.response.data.detail || "An error occurred.";
+            setError(errorMessage);
+            toast.error(errorMessage);
+          } else {
+
+            toast.error("Login failed. Please check your credentials.");
+          }
+          // throw error;
         } finally {
           toast.dismiss(toastId);
+          set({ loading: false });
         }
       },
 
       fetchUser: async () => {
         try {
-          const response = await apiClient.get("/user");
+          const response = await apiClient.get("profile/auth/user");
           console.log("Response:", response);
           if (response.status === 200) {
             if (response.data?.ser_type !== "Bidder") {
@@ -90,18 +101,18 @@ export const useUserStore = create(
             }
           }
         } catch (error) {
-          console.error("Error:",error?.response?.data);
+          console.error("Error:", error?.response?.data);
           // toast.error(error.response?.data?.detail);
         }
       },
 
       logOut: async () => {
         try {
-          const response = await apiClient.post("logout");
+          const response = await apiClient.post("profile/auth/logout/");
           // const response = await axios.post("/api/logout");
           if (response.status === 200) {
             console.log(response.data.message);
-            get().clearUser();
+            // get().clearUser();
           }
         } catch (error) {
           console.error("Error:", error);
@@ -119,7 +130,7 @@ export const useUserStore = create(
         darkMode: state.darkMode,
 
       }),
-  
+
 
 
     }
