@@ -49,20 +49,24 @@ export default function NotActivate() {
     setIsLoading(true);
     setError("");
 
-await apiClient.post("profile/auth/activate/resend"
-  // { email: user.email}
-)
-    .then((response) => {
-      console.log(response.data);
-      // login(response.data);
-      setServerMessage("Activation email has been resent successfully!");
-    })
-    .catch((error) => {
+    try {
+     const res =  await apiClient.post("profile/auth/activate/resend",
+        { email: user.email}
+      )
+
+      if (res.status === 200) {
+        setServerMessage(res?.data?.detail || "Activation email has been resent successfully!");
+      }
+      
+    } catch (error) {
       console.error("Error:", error);
-    })
-    .finally(
-      setIsLoading(false)
-    )
+      setError("An error occurred while sending the activation email.");
+      
+    }finally{
+      setIsLoading(false);
+    }
+
+
 
   };
 
@@ -101,11 +105,11 @@ await apiClient.post("profile/auth/activate/resend"
             <Alert variant="success" >
               {/* <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" /> */}
               <AlertTitle className="">
-                Success
-              </AlertTitle>
-              <AlertDescription >
                 {serverMessage}
-              </AlertDescription>
+                {/* Success */}
+              </AlertTitle>
+              {/* <AlertDescription >
+              </AlertDescription> */}
               <AlertDescription className="text-s text-lime-500 dark:text-lime-300">
                 Please check your inbox for the activation link.
               </AlertDescription>
@@ -134,6 +138,7 @@ await apiClient.post("profile/auth/activate/resend"
                 <Button
                   onClick={handleReactivate}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600"
+                  loading={isLoading}
                   disabled={isLoading}
                 >
                   {isLoading ? (

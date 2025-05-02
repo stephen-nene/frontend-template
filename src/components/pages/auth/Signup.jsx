@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { Alert, AlertDescription } from "@/components/shadcn/alert";
+import { Alert,AlertTitle, AlertDescription } from "@/components/shadcn/alert";
 import { Button } from "@/components/shadcn/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/card";
 import { Input } from "@/components/shadcn/input";
@@ -46,11 +46,13 @@ import {
   SelectValue,
 } from "@/components/shadcn/select";
 
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import {apiClient} from "@/services/apiClient.js";
 
 // Form validation schema based on the Django User model
 const signupSchema = z.object({
@@ -80,6 +82,9 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState([]);
+
+  const navigate = useNavigate();
 
   // Initialize form with react-hook-form and zod validation
   const form = useForm({
@@ -99,31 +104,44 @@ export default function SignUp() {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    
+    setErrors([]); // clear previous errors
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Log the data that would be sent to the server
-      console.log("Form data to send:", {
-        email: data.email,
-        username: data.username,
-        first_name: data.first_name,
-        last_name: data.last_name,
-        password: data.password,
-        phone_number: data.phone_number || "",
-        gender: data.gender || "",
-        status: "pending", // Default status from model
-        role: "user" // Default role from model
-      });
-      
-      // Success notification
-      toast.success("Registration successful! Please check your email for verification.");
-      
-      // Navigate to login or verification page
-      // navigate("/login");
+      const res = await apiClient.post("profile/auth/signup", data); // no need for {data}
+
+      if (res.status === 201) {
+        toast.success("Registration successful! Please check your email.");
+        // Optionally navigate
+        setTimeout(() => {
+          navigate("/login");
+        }
+        , 3000);
+      }
     } catch (error) {
-      toast.error("Registration failed. Please try again.");
+      console.log("Registration error:", error);
+      
+      let errorMessages = [];
+
+      // Axios-style error response with field-level errors
+      if (error.response?.data) {
+        const data = error.response.data;
+
+        if (typeof data === "object") {
+          Object.entries(data).forEach(([field, messages]) => {
+            if (Array.isArray(messages)) {
+              errorMessages.push(...messages);
+            } else {
+              errorMessages.push(messages);
+            }
+          });
+        } else if (typeof data === "string") {
+          errorMessages.push(data);
+        }
+      } else {
+        errorMessages.push("Something went wrong. Please try again.");
+      }
+
+      setErrors(errorMessages);
     } finally {
       setIsLoading(false);
     }
@@ -145,6 +163,7 @@ export default function SignUp() {
           </CardHeader>
 
           <CardContent>
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {/* Email field */}
@@ -373,6 +392,17 @@ export default function SignUp() {
                     </FormItem>
                   )}
                 />
+
+{errors.length > 0 && (
+        <div className="space-y-2 mb-4">
+            <Alert  variant="destructive">
+              <AlertTitle>Error/s</AlertTitle>
+          {errors.map((err, idx) => (
+              <AlertDescription key={idx}>{err}</AlertDescription>
+            ))}
+            </Alert>
+        </div>
+      )}
 
                 {/* Submit button */}
                 <Button

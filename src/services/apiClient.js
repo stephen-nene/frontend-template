@@ -31,9 +31,9 @@ const createApiClient = (baseURL, contentType = "application/json") => {
       // console.log("accessToken in interceptor:", access_token); // Add this line!
 
       if (access_token) {
-        config.headers.Authorization = `Bearer ${access_token}k`;
+        config.headers.Authorization = `Bearer ${access_token}`;
       }
-      console.log(config,access_token)
+      // console.log(config,access_token)
       return config;
     },
     (error) => Promise.reject(error)
@@ -44,8 +44,9 @@ const createApiClient = (baseURL, contentType = "application/json") => {
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
+      console.log(error)
 
-      if (error.response?.status === 401 && !originalRequest._retry) {
+      if ((error.response?.status === 401 && error.response?.data.code === "token_not_valid") && !originalRequest._retry) {
         originalRequest._retry = true;
         const { refresh_token } = useUserStore.getState(); // Get refreshToken and refreshAccessToken here
 
@@ -78,7 +79,7 @@ const createApiClient = (baseURL, contentType = "application/json") => {
         } else {
           // No refresh token available, redirect to login
           useUserStore.getState().clearUser();
-          window.location.href = '/login';
+          // window.location.href = '/login';
           return Promise.reject(error);
         }
       }
