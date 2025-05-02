@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { Alert, AlertDescription } from "@/components/shadcn/alert";
+import { Alert,AlertTitle, AlertDescription } from "@/components/shadcn/alert";
 import { Button } from "@/components/shadcn/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/card";
 import { Input } from "@/components/shadcn/input";
@@ -45,9 +45,11 @@ const loginSchema = z.object({
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const login = useUserStore((state)=>state.login)
+  const isLoading = useUserStore((state)=>state.loading)
+  const [error, setError] = useState(null);
   // console.log(login)
 
   // Initialize form with react-hook-form and zod validation
@@ -61,23 +63,15 @@ export default function Login() {
   });
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
+    // setIsLoading(true);
+    // setError(null);
 
-    try {
+
       // Simulate API call
       // await new Promise(resolve => setTimeout(resolve, 1500));
-      await login(data)
+      await login(data,navigate,setError)
 
-      // Success notification
-      toast.success("Login successful! Redirecting to dashboard...");
-
-      // Navigate to dashboard after successful login
-      setTimeout(() => navigate("/dashboard"), 800);
-    } catch (error) {
-      toast.error("Login failed. Please check your credentials.");
-    } finally {
-      setIsLoading(false);
-    }
+    
   };
 
   return (
@@ -138,6 +132,14 @@ export default function Login() {
           </CardHeader>
 
           <CardContent>
+      {error && (
+        <Alert className="mb-4" variant="destructive">
+          <AlertTitle className="text-red-600">Error</AlertTitle>
+          <AlertDescription className="text-red-500">
+            {error}
+          </AlertDescription>
+        </Alert>
+      )}
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {/* Email field */}

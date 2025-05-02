@@ -20,6 +20,7 @@
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-separator": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-switch": "^1.2.2",
     "@tailwindcss/vite": "^4.0.14",
     "axios": "^1.8.3",
     "class-variance-authority": "^0.7.1",

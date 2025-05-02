@@ -29,34 +29,49 @@ import {
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useUserStore } from "@/store/useUserStore";
-export default function NotActivate({ darkMode }) {
+
+import { apiClient } from "../../../services/apiClient";
+export default function NotActivate() {
   const [error, setError] = useState("");
   const [serverMessage, setServerMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
-  const { login, userData } = useUserStore();
+  const { login, user } = useUserStore();
 
   const form = useForm({
     defaultValues: {
-      email: userData?.email || "",
+      email: user?.email || "",
     },
   });
 
-  const handleReactivate = (e) => {
+  const handleReactivate = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    // Simulating API call
-    setTimeout(() => {
-      console.log("Activation email resent to:", userData?.email);
+await apiClient.post("profile/auth/activate/resend")
+    .then((response) => {
+      console.log(response.data);
+      // login(response.data);
       setServerMessage("Activation email has been resent successfully!");
-      setIsLoading(false);
-      toast.success("Activation email sent! Please check your inbox.", {
-        description: `An email was sent to ${userData?.email}`,
-        duration: 5000,
-      });
-    }, 1500);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    })
+    .finally(
+      setIsLoading(false)
+    )
+
+    // Simulating API call
+    // setTimeout(() => {
+    //   console.log("Activation email resent to:", user?.email);
+    //   setServerMessage("Activation email has been resent successfully!");
+    //   setIsLoading(false);
+    //   toast.success("Activation email sent! Please check your inbox.", {
+    //     description: `An email was sent to ${user?.email}`,
+    //     duration: 5000,
+    //   });
+    // }, 1500);
   };
 
   const handleUpdateEmail = (values) => {
@@ -65,7 +80,7 @@ export default function NotActivate({ darkMode }) {
 
     // Simulating API call
     setTimeout(() => {
-      console.log("Email updated from", userData?.email, "to:", values.email);
+      console.log("Email updated from", user?.email, "to:", values.email);
       setServerMessage("Email updated! A new activation link has been sent.");
       setIsUpdatingEmail(false);
       toast.success("Email updated successfully!", {
@@ -91,12 +106,12 @@ export default function NotActivate({ darkMode }) {
 
         <CardContent className="space-y-4 pt-6">
           {serverMessage ? (
-            <Alert className="bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
-              <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-              <AlertTitle className="text-green-800 dark:text-green-400">
+            <Alert variant="success" >
+              {/* <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" /> */}
+              <AlertTitle className="">
                 Success
               </AlertTitle>
-              <AlertDescription className="text-green-700 dark:text-green-300">
+              <AlertDescription >
                 {serverMessage}
               </AlertDescription>
               <AlertDescription className="text-s text-lime-500 dark:text-lime-300">
@@ -112,9 +127,9 @@ export default function NotActivate({ darkMode }) {
                 </AlertTitle>
                 <AlertDescription className="flex flex-col text-amber-700 dark:text-amber-300">
                   An activation email was sent to{" "}
-                  {userData?.email || "your email address"}{" "}
+                  {user?.email || "your email address"}{" "}
                   {/* <span className="font-semibold">
-                    {userData?.email || "your email address"}
+                    {user?.email || "your email address"}
                   </span>{" "} */}
                   with instructions.
                 </AlertDescription>

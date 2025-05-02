@@ -10,13 +10,13 @@ const Suspended = lazy(() => import("./Suspended.jsx"));
 const ComingSoon = lazy(() => import("./ComminSoon.jsx"));
 
 const ProtectedRoute = ({ children, allowedRoles, allowPendingAccess }) => {
-  const { user, darkMode } = useUserStore();
+  const { user } = useUserStore();
 
   // Wrap each return in Suspense
   if (!user || !Object.keys(user).length) {
     return (
       <Suspense fallback={<LoadingSpinner />}>
-        <NotLoggedIn darkMode={darkMode} />
+        <NotLoggedIn  />
       </Suspense>
     );
   }
@@ -24,7 +24,7 @@ const ProtectedRoute = ({ children, allowedRoles, allowPendingAccess }) => {
   if (user.status === "suspended") {
     return (
       <Suspense fallback={<LoadingSpinner />}>
-        <Suspended darkMode={darkMode} />
+        <Suspended />
       </Suspense>
     );
   }
@@ -36,7 +36,7 @@ const ProtectedRoute = ({ children, allowedRoles, allowPendingAccess }) => {
   ) {
     return (
       <Suspense fallback={<LoadingSpinner />}>
-        <Unauthorised darkMode={darkMode} />
+        <Unauthorised  />
       </Suspense>
     );
   }
@@ -44,7 +44,7 @@ const ProtectedRoute = ({ children, allowedRoles, allowPendingAccess }) => {
   if (user.status !== "active" && !allowPendingAccess) {
     return (
       <Suspense fallback={<LoadingSpinner />}>
-        <NotActivate darkMode={darkMode} />
+        <NotActivate  />
       </Suspense>
     );
   }

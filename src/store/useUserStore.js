@@ -92,7 +92,7 @@ export const useUserStore = create(
 
       logOut: async () => {
         try {
-          const response = await apiClient.post("profile/auth/logout/");
+          const response = await apiClient.post("profile/auth/logout/",{"refresh": get().refresh_token});
           if (response.status === 200) {
             console.log(response.data.message);
             get().clearUser();
