@@ -3,7 +3,6 @@ import { persist, devtools } from "zustand/middleware";
 import { toast } from "sonner";
 import { apiClient } from "@/services/apiClient";
 
-
 export const useUserStore = create(
   persist(
     devtools((set, get) => ({
@@ -18,10 +17,6 @@ export const useUserStore = create(
       getUser: () => get().user,
 
       toggleDarkMode: () => {
-        // toast.success("Dark mode toggled!", {
-        //   duration: 500,
-        //   position: "top-center",
-        // });
         set((state) => {
           const newMode = !state.darkMode;
           localStorage.setItem("darkMode", JSON.stringify(newMode));
@@ -37,38 +32,32 @@ export const useUserStore = create(
         toast.success("👋 You have been logged out.");
       },
 
-      // logOut: () => set({ user: null, token: null, loggedIn: false }),
-
-      // Backend API Requests
+      setAccessToken: (access_token) => set({ access_token }),
 
       login: async (data, navigate, setError) => {
         set({ loading: true });
         setError(null);
-        const toastId = toast.loading("Logging in..."); // Show loading toast
+        const toastId = toast.loading("Logging in...");
         const data2 = {
           ...data,
           identifier: data.email
         }
-        // console.log(data2)
 
         try {
           const response = await apiClient.post("profile/auth/login", data2);
           console.log("Response:", response);
           if (response.status === 200) {
-
             set({
               user: response.data.user_info,
               refresh_token: response.data.refresh_token,
               access_token: response.data.access_token,
               loggedIn: true,
             });
-            toast.success(response.data.message || "LoggedIn successful!"); // Replace loading toast with success
-
+            toast.success(response.data.message || "LoggedIn successful!");
             // setTimeout(() => {
             //   navigate("/");
             // }, 3000);
             return response;
-
           }
         } catch (error) {
           let errorMessage = "An error occurred. Please try again.";
@@ -77,10 +66,8 @@ export const useUserStore = create(
             setError(errorMessage);
             toast.error(errorMessage);
           } else {
-
             toast.error("Login failed. Please check your credentials.");
           }
-          // throw error;
         } finally {
           toast.dismiss(toastId);
           set({ loading: false });
@@ -94,25 +81,21 @@ export const useUserStore = create(
           if (response.status === 200) {
             if (response.data?.ser_type !== "Bidder") {
               set({ user: null, token: null, loggedIn: false });
-              //  toast.error("User type is not Bidder");
             } else {
-
               set({ user: response.data, loggedIn: true });
             }
           }
         } catch (error) {
           console.error("Error:", error?.response?.data);
-          // toast.error(error.response?.data?.detail);
         }
       },
 
       logOut: async () => {
         try {
           const response = await apiClient.post("profile/auth/logout/");
-          // const response = await axios.post("/api/logout");
           if (response.status === 200) {
             console.log(response.data.message);
-            // get().clearUser();
+            get().clearUser();
           }
         } catch (error) {
           console.error("Error:", error);
@@ -128,11 +111,7 @@ export const useUserStore = create(
         refresh_token: state.refresh_token,
         loggedIn: state.loggedIn,
         darkMode: state.darkMode,
-
       }),
-
-
-
     }
   )
 );
