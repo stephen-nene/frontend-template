@@ -39,6 +39,7 @@ export const useUserStore = create(
       },
 
       setAccessToken: (access_token) => set({ access_token }),
+      setRefreshToken: (refresh_token) => set({ refresh_token }),
 
       login: async (data, navigate, setError) => {
         set({ loading: true });

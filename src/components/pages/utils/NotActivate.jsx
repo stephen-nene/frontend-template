@@ -49,7 +49,9 @@ export default function NotActivate() {
     setIsLoading(true);
     setError("");
 
-await apiClient.post("profile/auth/activate/resend")
+await apiClient.post("profile/auth/activate/resend"
+  // { email: user.email}
+)
     .then((response) => {
       console.log(response.data);
       // login(response.data);
@@ -62,16 +64,6 @@ await apiClient.post("profile/auth/activate/resend")
       setIsLoading(false)
     )
 
-    // Simulating API call
-    // setTimeout(() => {
-    //   console.log("Activation email resent to:", user?.email);
-    //   setServerMessage("Activation email has been resent successfully!");
-    //   setIsLoading(false);
-    //   toast.success("Activation email sent! Please check your inbox.", {
-    //     description: `An email was sent to ${user?.email}`,
-    //     duration: 5000,
-    //   });
-    // }, 1500);
   };
 
   const handleUpdateEmail = (values) => {
