@@ -52,7 +52,7 @@ import { useUserStore } from "@/store/useUserStore";
     {
       name: "Products",
       icon: <ShoppingCart size={20} />,
-      roles: ["admin", "manager"],
+      roles: ["admin", "manager",'user'],
       subLinks: [
         { name: "Inventory", path: "/dashboard/products/inventory" },
         { name: "Categories", path: "/dashboard/products/categories" }
@@ -60,17 +60,21 @@ import { useUserStore } from "@/store/useUserStore";
     },
     {
       name: "Settings",
-      path: "/dashboard/settings",
+      // path: "/dashboard/settings",
       icon: <Settings size={20} />,
-      roles: ["user", "admin", "editor", "manager"]
+      roles: ["user", "admin", "editor", "manager"],
+      subLinks: [
+        // { name: "All Users", path: "/dashboard/users" },
+        { name: "Profile", path: "/dashboard/profile" }
+      ]
     }
   ];
 
   // Filter nav items based on user role
-  const filteredNavItems = navItems.filter(item => 
-    user && user.role && item.roles.includes(user.role)
-  );
-
+  // const filteredNavItems = navItems.filter(item => 
+  //   user && user.role && item.roles.includes(user.role)
+  // );
+const filteredNavItems = navItems
   // Toggle category expansion
   const toggleCategory = (categoryName) => {
     setExpandedCategories(prev => ({

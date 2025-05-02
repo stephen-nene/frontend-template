@@ -16,6 +16,7 @@ const Navbar = () => {
   const { darkMode, toggleDarkMode, user, loggedIn, logOut } = useUserStore();
 
   const toggleMenu = () => setIsOpen(!isOpen);
+  console.log(loggedIn)
 
   // Navigation items
   const navItems = [

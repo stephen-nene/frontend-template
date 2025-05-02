@@ -1,7 +1,8 @@
 import axios from "axios";
 const API_URL =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/v1.0/";
-// const API_URL = "http://127.0.0.1:8000/api/v1.0/";
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/";
+// const API_URL = "http://127.0.0.1:8000/api/v1.0/"; http://127.0.0.1:8000/profile/auth/login
+
 
 // console.log(API_URL)
 
