@@ -74,7 +74,7 @@ export const handleServerRegister = async (data, navigate) => {
       navigate("/login");
     }
   } catch (error) {
-    console.log("registrartion error",error);
+    console.log("registrartion error", error);
     toast.error(
       error.response?.data?.detail || "Registration failed. Please try again.",
       { id: toastId }
@@ -84,25 +84,56 @@ export const handleServerRegister = async (data, navigate) => {
   }
 };
 
-export const handleServerReset = async (data, navigate) => {
-  const toastId = toast.loading("sending Server Reset")
+export const handleForgotPassword = async (email, setServerMsg) => {
+  setServerMsg({ error: "", success: "" })
+  const toastId = toast.loading("Sending Reset Link...");
   try {
-    const response = await apiClient.post("password/reset/", data);
+    const response = await apiClient.post("profile/auth/password-reset", { email });
     console.log("Server Reset", response)
     if (response.status === 200) {
-      
+      setServerMsg({ success: response?.data?.detail })
       toast.success("Reset password sent successfully", { id: toastId });
-      // navigate("/login");
     } else {
+      setServerMsg({ error: response?.data?.detail })
       toast.error("Failed to send reset password", { id: toastId });
     }
   } catch (e) {
     console.log(e);
+    setServerMsg({ error: e?.response?.data?.detail })
     toast.error("Failed to send reset password", { id: toastId });
   } finally {
     toast.dismiss(toastId);
   }
+
+
 }
+
+export const handleServerReset = async (data, setServerMsg, navigate) => {
+  setServerMsg({ error: "", success: "" })
+  const toastId = toast.loading("Resetting Password...");
+  try {
+    const response = await apiClient.put(`profile/auth/password-reset?token=${data?.token}`, data);
+    console.log("Server Reset", response)
+    if (response.status === 200) {
+      setServerMsg({ success: response?.data?.detail })
+      toast.success("Password reset successful", { id: toastId });
+      setTimeout(
+        () => (navigate("/login")),
+        5000
+      )
+    } else {
+      setServerMsg({ error: response?.data?.detail })
+      toast.error("Failed to reset password", { id: toastId });
+    }
+  } catch (e) {
+    console.log(e);
+    setServerMsg({ error: e?.response?.data?.detail })
+    toast.error("Failed to reset password", { id: toastId });
+  } finally {
+    toast.dismiss(toastId);
+  }
+}
+
 export const logoutUser = async (logout, navigate) => {
   try {
     await apiClient.delete("logouts");

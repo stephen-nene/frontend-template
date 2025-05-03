@@ -50,7 +50,7 @@ export const routes = [
   { path: "/register", element: AuthRoutes.Register },
   { path: "/forgot", element: AuthRoutes.Forgot },
   { path: "/activate", element: AuthRoutes.Activate },
-  { path: "/reset/:token", element: AuthRoutes.Reset },
+  { path: "/reset-password", element: AuthRoutes.Reset },
 
   // Protected Routes
   {

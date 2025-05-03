@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Mail, Shield, AlertCircle, KeyRound } from "lucide-react";
+import { toast } from "sonner";
 
 import { Alert, AlertDescription } from "@/components/shadcn/alert";
 import { Button } from "@/components/shadcn/button";
@@ -19,6 +20,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
+import { handleForgotPassword } from "../../../services/requests/auth";
+
 // Schema for email only
 const forgotSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -27,6 +30,7 @@ const forgotSchema = z.object({
 export default function ForgotPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [serverMsg, setServerMsg] = useState("");
   const navigate = useNavigate();
 
   const form = useForm({
@@ -35,16 +39,19 @@ export default function ForgotPassword() {
       email: "",
     },
   });
+  // auth/password-reset
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     setErrorMsg("");
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulated request
+      await handleForgotPassword(data.email, setServerMsg);
+      // await new Promise(resolve => setTimeout(resolve, 1500)); // Simulated request
       console.log("Password reset link sent to:", data.email);
     } catch (error) {
-      setErrorMsg("Failed to send reset email. Please try again.");
+      toast.error("Failed to send reset email. Please try again.");
+      // setErrorMsg("Failed to send reset email. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -106,12 +113,24 @@ export default function ForgotPassword() {
           </CardHeader>
 
           <CardContent>
-            {errorMsg && (
+            {/* {errorMsg && (
               <Alert variant="destructive" className="mb-4">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{errorMsg}</AlertDescription>
               </Alert>
+            )} */}
+              {/* {console.log(serverMsg)} */}
+            {(serverMsg?.error || serverMsg?.success) && (
+              <Alert
+                variant={serverMsg.error ? "destructive" : "success"}
+                className="mb-4"
+              >
+                <AlertDescription>
+                  {serverMsg.error || serverMsg.success }
+                </AlertDescription>
+              </Alert>
             )}
+
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
