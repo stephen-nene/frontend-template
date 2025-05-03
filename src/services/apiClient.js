@@ -8,7 +8,7 @@ const env = import.meta.env.VITE_ENV;
 const url = import.meta.env.VITE_BACKEND_URL;
 
 // Determine the base URL based on the environment
-const BASE_URL = env === "development" ? `/api` : url || `https://tiberbu.onrender.com/api/v1.0/`;
+const BASE_URL = env === "development" ? `/api` : url || `https://server-template-n0q8.onrender.com/`;
 
 // Function to create an Axios client
 const createApiClient = (baseURL, contentType = "application/json") => {

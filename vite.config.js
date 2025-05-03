@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
   
   console.log(env.VITE_BACKEND_URL);
   
-  const backUrl = env.VITE_BACKEND_URL || "https://tiberbu.onrender.com/api/v1.0/";
+  const backUrl = env.VITE_BACKEND_URL || "https://server-template-n0q8.onrender.com/";
 
   return {
     plugins: [react(),tailwindcss()],
