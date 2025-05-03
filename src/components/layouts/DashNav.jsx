@@ -134,8 +134,10 @@ const filteredNavItems = navItems
           
           <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-800">
             {!isCollapsed && (
-              <span className="font-bold text-xl dark:text-white">
+              <span className="font-bold text-xl dark:text-white hover:text-blue-500">
+                <Link to="/">
                 Dashboard
+                </Link>
               </span>
             )}
             <button

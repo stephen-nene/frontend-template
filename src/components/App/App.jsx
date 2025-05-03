@@ -82,7 +82,7 @@ const App = React.forwardRef((props, ref) => {
     <div className={`${darkMode ? "dark " : ""} `}>
       {!isDashboard && <Navbar />}
 
-      <div className="bg-white   min-h-screen ">
+      <div className="dark:bg-gray-950 dark:text-white   min-h-screen ">
         <Routes>{routes.map(renderRoute)}</Routes>
       </div>
       {/* <Footer /> */}

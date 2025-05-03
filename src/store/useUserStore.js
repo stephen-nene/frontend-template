@@ -124,8 +124,9 @@ export const useUserStore = create(
             get().clearUser();
           }
         } catch (error) {
+          get().clearUser()
           console.error("Error:", error);
-          toast.error(error.response?.data?.detail);
+          // toast.error("Logging you out"||error.response?.data?.detail);
         }
       },
     })),

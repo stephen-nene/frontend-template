@@ -7,6 +7,8 @@ const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/";
 const env = import.meta.env.VITE_ENV;
 const url = import.meta.env.VITE_BACKEND_URL;
 
+console.log("here",env)
+
 // Determine the base URL based on the environment
 const BASE_URL = env === "development" ? `/api` : url || `https://server-template-n0q8.onrender.com/`;
 

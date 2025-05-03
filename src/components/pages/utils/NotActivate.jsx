@@ -134,12 +134,13 @@ export default function NotActivate() {
           {serverMessage ? (
             <Alert variant="success" >
               {/* <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" /> */}
+              {serverMessage?.email &&(
               <AlertTitle className="">
               {serverMessage?.email}
-                {/* Success */}
               </AlertTitle>
+              )}
               <AlertDescription >
-                {serverMessage?.message}
+                {serverMessage||serverMessage?.message || serverMessage?.detail}
 
               </AlertDescription>
               <AlertDescription className="text-s text-lime-500 dark:text-lime-300">
