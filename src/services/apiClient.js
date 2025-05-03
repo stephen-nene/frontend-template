@@ -31,7 +31,7 @@ const createApiClient = (baseURL, contentType = "application/json") => {
       // console.log("accessToken in interceptor:", access_token); // Add this line!
 
       if (access_token) {
-        config.headers.Authorization = `Bearer ${access_token}`;
+        config.headers.Authorization = `Bearer ${access_token}r`;
       }
       // console.log(config,access_token)
       return config;
@@ -40,53 +40,58 @@ const createApiClient = (baseURL, contentType = "application/json") => {
 );
 
 
-  client.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      const originalRequest = error.config;
-      console.log(error)
+client.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-      if ((error.response?.status === 401 && error.response?.data.code === "token_not_valid") && !originalRequest._retry) {
-        originalRequest._retry = true;
-        const { refresh_token } = useUserStore.getState(); // Get refreshToken and refreshAccessToken here
+    if (
+      error.response?.status === 401 &&
+      error.response?.data?.code === "token_not_valid" &&
+      error.response?.data?.messages?.some(
+        (msg) => msg.token_class === "AccessToken" && msg.token_type === "access"
+      ) &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
 
-        if (refresh_token) {
-          try {
-            const refreshResponse = await axios.post(`${BASE_URL}/profile/auth/refresh`, {
-              refresh: refresh_token,
-            }, {
-              withCredentials: true,
-            });
+      const { refresh_token } = useUserStore.getState();
 
-            if (refreshResponse.status === 200) {
-              // console.log(refreshResponse)
-              const newAccessToken = refreshResponse.data.access;
-              const newRefreshToken = refreshResponse.data.refresh;
-              useUserStore.getState().setAccessToken(newAccessToken); // Update the store
-              useUserStore.getState().setRefreshToken(newRefreshToken); // Update the store
-              
-              originalRequest.headers.Authorization = `Bearer ${newAccessToken}`; // Retry the original request
-              return axios(originalRequest); // Execute the original request with the new access token
-            }
-          } catch (refreshError) {
-            // Handle refresh token failure (e.g., redirect to login)
-            // console.error("Failed to refresh token:", refreshError);
-            toast.error(refreshError.response.data.detail||"Session expired. Please log in again.");
-            useUserStore.getState().clearUser();
-            window.location.href = '/login'; 
-            return Promise.reject(refreshError);
+      if (refresh_token) {
+        try {
+          const refreshResponse = await axios.post(`${BASE_URL}/profile/auth/refresh`, {
+            refresh: refresh_token,
+          }, {
+            withCredentials: true,
+          });
+
+          if (refreshResponse.status === 200) {
+            const newAccessToken = refreshResponse.data.access;
+            const newRefreshToken = refreshResponse.data.refresh;
+
+            useUserStore.getState().setAccessToken(newAccessToken);
+            useUserStore.getState().setRefreshToken(newRefreshToken);
+
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return axios(originalRequest);
           }
-        } else {
-          // No refresh token available, redirect to login
+        } catch (refreshError) {
+          toast.error(refreshError.response?.data?.detail || "Session expired. Please log in again.");
           useUserStore.getState().clearUser();
-          // window.location.href = '/login';
-          return Promise.reject(error);
+          window.location.href = '/login';
+          return Promise.reject(refreshError);
         }
+      } else {
+        useUserStore.getState().clearUser();
+        window.location.href = '/login';
+        return Promise.reject(error);
       }
-
-      return Promise.reject(error);
     }
-  );
+
+    return Promise.reject(error);
+  }
+);
+
 
   return client;
 };
