@@ -70,7 +70,7 @@ export default function NotActivate() {
 
   };
 
-  const handleUpdateEmail = (values) => {
+  const handleUpdateEmail2 = (values) => {
     setIsUpdatingEmail(true);
     setError("");
 
@@ -85,6 +85,36 @@ export default function NotActivate() {
       });
     }, 1500);
   };
+
+  const handleUpdateEmail = async (values) => {
+    setIsUpdatingEmail(true);
+    setError("");
+
+    try {
+        const response = await apiClient.put("profile/auth/update-email", {
+            email: values.email,
+        });
+
+        console.log(response)
+
+        if (response.status === 200) {
+          setServerMessage(response?.data || "Email updated! A new activation link has been sent.");
+            toast.success("Email updated successfully!", {
+                description: `We've sent a new activation link to ${values.email}`,
+                duration: 5000,
+            });
+        } else {
+            setError(response.data.error || "Failed to update email");
+            toast.error(response.data.error || "Failed to update email");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        setError(error.response?.data?.detail ||"Network error occurred");
+        toast.error(error.response?.data?.detail ||"Network error occurred");
+    } finally {
+        setIsUpdatingEmail(false);
+    }
+};
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-b from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
@@ -105,11 +135,13 @@ export default function NotActivate() {
             <Alert variant="success" >
               {/* <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" /> */}
               <AlertTitle className="">
-                {serverMessage}
+              {serverMessage?.email}
                 {/* Success */}
               </AlertTitle>
-              {/* <AlertDescription >
-              </AlertDescription> */}
+              <AlertDescription >
+                {serverMessage?.message}
+
+              </AlertDescription>
               <AlertDescription className="text-s text-lime-500 dark:text-lime-300">
                 Please check your inbox for the activation link.
               </AlertDescription>
@@ -214,6 +246,21 @@ export default function NotActivate() {
             </>
           )}
 
+          {error && (
+            <Alert variant="destructive">
+              {/* <AlertCircle className="h-4 w-4" /> */}
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* <Alert variant="warning">
+            <AlertTitle>Important Note</AlertTitle>
+            <AlertDescription>
+              If you don't receive the activation email, please check your spam
+              folder or contact support.
+            </AlertDescription>
+          </Alert> */}
           <div className="flex items-center justify-center space-x-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-md border border-amber-200 dark:border-amber-800 mt-4">
             <Clock className="h-4 w-4" />
             <p>
@@ -222,13 +269,6 @@ export default function NotActivate() {
             </p>
           </div>
 
-          {error && (
-            <Alert variant="destructive">
-              {/* <AlertCircle className="h-4 w-4" /> */}
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
         </CardContent>
 
         <CardFooter className="flex justify-center border-t border-gray-200 dark:border-gray-800 pt-4 pb-6 bg-gray-50 dark:bg-gray-950/50 rounded-b-lg">

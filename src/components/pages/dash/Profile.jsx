@@ -45,7 +45,14 @@ const profileFormSchema = z.object({
   bio: z.string().max(200).optional(),
   avatar_url: z.string().url().optional(),
   birth_date: z.string().optional(),
-  address: z.string().optional(),
+  address: z.object({
+    country: z.string().optional(),
+    state: z.string().optional(),
+    city: z.string().optional(),
+    street: z.string().optional(),
+    postal_code: z.string().optional(),
+    additional_info: z.string().optional(),
+  }).optional(),
   gender: z.enum(["male", "female", "other"]).optional(),
   is_active: z.boolean(),
 });
@@ -60,18 +67,37 @@ export default function Profile() {
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       ...user,
-      birth_date: user?.birth_date?.split('T')[0], // Format date for input
+      birth_date: user?.birth_date?.split('T')[0],
+      address: user?.address ? JSON.parse(user.address) : {
+        country: '',
+        state: '',
+        city: '',
+        street: '',
+        postal_code: '',
+        additional_info: ''
+      }
     },
   });
-  console.log(user)
+  // console.log(user)
 
   async function onSubmit(values) {
     try {
+      // remove id in this object
+      // eslint-disable-next-line no-unused-vars
+      const { id, ...rest } = values;      
+      // const formattedValues = {
+      //   ...rest,
+      //   address: JSON.stringify(rest.address)
+      // };
+      console.log(rest)
+      console.log("old values", values)
+      
       // Simulate API call
       await updateUser(values);
       setIsEditMode(false);
       toast.success("Profile updated successfully");
     } catch (error) {
+      console.error("Error updating profile:", error);
       toast.error("Failed to update profile");
     }
   }
@@ -294,25 +320,128 @@ export default function Profile() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem className="col-span-full">
-                      <FormLabel className="flex items-center gap-2 dark:text-gray-300">
-                        <MapPin className="h-4 w-4" /> Address
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          readOnly={!isEditMode}
-                          className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              
+
+                <div className="col-span-full space-y-4">
+                  <Label className="flex items-center gap-2 dark:text-gray-300">
+                    <MapPin className="h-4 w-4" /> Address Details
+                  </Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="address.country"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="dark:text-gray-300">Country</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              readOnly={!isEditMode}
+                              className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                              placeholder="Country"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="address.state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="dark:text-gray-300">State/Province</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              readOnly={!isEditMode}
+                              className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                              placeholder="State or Province"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="address.city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="dark:text-gray-300">City</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              readOnly={!isEditMode}
+                              className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                              placeholder="City"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="address.postal_code"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="dark:text-gray-300">Postal Code</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              readOnly={!isEditMode}
+                              className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                              placeholder="Postal Code"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="address.street"
+                      render={({ field }) => (
+                        <FormItem className="col-span-full">
+                          <FormLabel className="dark:text-gray-300">Street Address</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              readOnly={!isEditMode}
+                              className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                              placeholder="Street address"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="address.additional_info"
+                      render={({ field }) => (
+                        <FormItem className="col-span-full">
+                          <FormLabel className="dark:text-gray-300">Additional Information</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              readOnly={!isEditMode}
+                              className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                              placeholder="Apartment number, building, landmark, etc."
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
 
                 <FormField
                   control={form.control}
@@ -354,6 +483,9 @@ export default function Profile() {
                 {isEditMode && (
                   <Button
                     type="submit"
+                    onClick={() => {
+                      form.handleSubmit(onSubmit(form.getValues()))();
+                    }}
                     className="w-full md:w-auto dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
                   >
                     Save Changes

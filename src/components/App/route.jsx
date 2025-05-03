@@ -16,7 +16,7 @@ const DashRoutes = {
   Dashboard: lazy(() => import("../pages/dash/Dashboard.jsx")),
   Profile: lazy(() => import("../pages/dash/Profile.jsx")),
 
-  // Users: lazy(() => import("../Components/pages/dash/Users.jsx")),
+  Users: lazy(() => import("../pages/dash/Users.jsx")),
 };
 
 import Home from "../pages/public/Home.jsx";
@@ -79,6 +79,13 @@ export const routes = [
         protected: true,
         roles: [],
       },
+      {
+        path: "users",
+        element: DashRoutes.Users,
+        protected: true,
+        roles: ["admin"],
+      }
+      ,
       {
         path: "products",
         element: DashRoutes.Dashboard,

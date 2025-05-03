@@ -121,6 +121,13 @@ export default function SignUp() {
       console.log("Registration error:", error);
       
       let errorMessages = [];
+      // is error.status == 401 and {"detail":"User not found","code":"user_not_found"} then remove the localstorage and redo request
+      if (error.response?.status === 401 && error.response?.data?.code === "user_not_found") {
+        toast.error("Server Error. Try again.");
+        localStorage.removeItem("userStore");
+        return; // Exit early since the action is complete
+      }
+ 
 
       // Axios-style error response with field-level errors
       if (error.response?.data) {

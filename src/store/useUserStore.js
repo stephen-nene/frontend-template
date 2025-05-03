@@ -49,7 +49,7 @@ export const useUserStore = create(
         });
       },
 
-      setUser: (user, token) => set({ user, token, loggedIn: true }),
+      setUser: (user) => set({ user,  loggedIn: true }),
 
       clearUser: (no) => {
         set({ user: null, refresh_token: null, access_token: null, loggedIn: false });
